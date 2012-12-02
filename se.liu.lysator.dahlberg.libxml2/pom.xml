@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>se.liu.lysator.dahlberg</groupId>
-  <artifactId>se.liu.lysator.dahlberg.javalibxml2</artifactId>
+  <artifactId>se.liu.lysator.dahlberg.libxml2</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>se.liu.lysator.dahlberg.javalibxml2</name>
-  <url>http://maven.apache.org</url>
+  <name>se.liu.lysator.dahlberg.libxml2</name>
+  <url>https://github.com/AndersDala/java-libxml2</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
