@@ -32,10 +32,13 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.apache.xerces.jaxp.SAXParserFactoryImpl;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
+
+import se.liu.lysator.dahlberg.se.liu.lysator.dahlberg.libxml2.LibXml2ParserFactory;
 
 /**
  * Unit test for xi:include.
@@ -49,6 +52,8 @@ public class XmlIncludeTest extends TestCase {
 	private static final String TPATH = "fourthought/test/XInclude/docs/";
 	private static final Logger LOG = Logger.getLogger(XmlIncludeTest.class.getName());
 	private SAXParser parser;
+	private String newFactoryName;
+	private String oldFactoryName;
 	
 	/**
 	 * Create the test case
@@ -70,14 +75,17 @@ public class XmlIncludeTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		
+		// Use the libxml2 sax-parser factory.
+		oldFactoryName = SAXParserFactoryImpl.class.getName();
+		newFactoryName = LibXml2ParserFactory.class.getName();
+		System.setProperty("javax.xml.parsers.SAXParserFactory", newFactoryName);
+		
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		factory.setNamespaceAware(true);
 		factory.setXIncludeAware(true);
 		parser = factory.newSAXParser();
-		// Configure XML Diff to be more relaxed
-		XMLUnit.setIgnoreComments(true);
-		XMLUnit.setIgnoreWhitespace(true);
-		XMLUnit.setIgnoreAttributeOrder(true);
+		
 	}
 	
 	protected void processAndCompare(InputStream source, InputStream result) throws Exception
@@ -89,13 +97,19 @@ public class XmlIncludeTest extends TestCase {
 		parser.parse(source, handler);
 		// Retrieve result and compare with expected result 
 		byte[] transformedBytes = baos.toByteArray();
-		LOG.finest("Result:\n" + new String(transformedBytes));
+		LOG.finer("Result:\n" + new String(transformedBytes));
 		ByteArrayInputStream bais = new ByteArrayInputStream(transformedBytes);
 		InputSource ss = new InputSource(bais);
 		InputSource rs = new InputSource(result);
+		System.setProperty("javax.xml.parsers.SAXParserFactory", oldFactoryName);
+		// Configure XML Diff to be more relaxed
+		XMLUnit.setIgnoreComments(true);
+		XMLUnit.setIgnoreWhitespace(true);
+		XMLUnit.setIgnoreAttributeOrder(true);
 		Diff diff = new Diff(ss, rs);
         LOG.info("Diff result: " + diff.toString());
-        assertTrue(diff.similar());
+        assertTrue(diff.identical());
+        System.setProperty("javax.xml.parsers.SAXParserFactory", newFactoryName);
     }
 	
 	/**

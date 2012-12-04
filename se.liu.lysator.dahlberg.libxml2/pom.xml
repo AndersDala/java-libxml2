@@ -5,13 +5,19 @@
   <groupId>se.liu.lysator.dahlberg</groupId>
   <artifactId>se.liu.lysator.dahlberg.libxml2</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>nar</packaging>
 
   <name>se.liu.lysator.dahlberg.libxml2</name>
   <url>https://github.com/AndersDala/java-libxml2</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <!-- Run maven integration-test to run test cases -->
+    <maven.test.skip.exec>true</maven.test.skip.exec>
+    <!-- Used to find manually clone from https://github.com/bertfrees/libxml2-nar
+    	TODO better solution using repository...
+     -->
+    <git.home>/home/${user.name}/git</git.home>
   </properties>
 
   <dependencies>
@@ -27,10 +33,128 @@
     	<version>1.3</version>
     	<scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.codeswarm</groupId>
+    	<artifactId>maven-nar-plugin</artifactId>
+    	<version>20121119</version>
+    	<type>maven-plugin</type>
+    </dependency>
+    <dependency>
+    	<groupId>org.apache.maven.plugins</groupId>
+    	<artifactId>maven-compiler-plugin</artifactId>
+    	<version>3.0</version>
+    	<type>maven-plugin</type>
+    </dependency>
+    <dependency>
+      <groupId>org.xmlsoft</groupId>
+      <artifactId>xml2</artifactId>
+      <version>2.7.3</version>
+      <type>nar</type>
+      <!-- manually clone from https://github.com/bertfrees/libxml2-nar
+           and install in local repo.
+           TODO remove this limitation
+       -->
+    </dependency> 
   </dependencies>
   <description>SaxParser interface towards the libxml2 parser library.</description>
   <scm>
   	<url>git@github.com:AndersDala/java-libxml2.git</url>
   	<developerConnection>Anders Dahlberg</developerConnection>
   </scm>
+  <pluginRepositories>
+    <pluginRepository>
+	  <id>maven-nar-plugin</id>
+	  <name>Maven NAR Plugin</name>
+	  <url>http://github.com/duns/maven-snapshots/raw/gh-pages</url>
+	  <layout>default</layout>
+	  <releases>
+	      <enabled>true</enabled>
+	      <updatePolicy>daily</updatePolicy>
+	      <checksumPolicy>warn</checksumPolicy>
+	  </releases>
+	  <snapshots>
+	    <enabled>true</enabled>
+	    <updatePolicy>daily</updatePolicy>
+	  </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-nar-plugin</artifactId>
+          <version>2.1-SNAPSHOT</version>
+        </plugin>
+        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        <plugin>
+        	<groupId>org.eclipse.m2e</groupId>
+        	<artifactId>lifecycle-mapping</artifactId>
+        	<version>1.0.0</version>
+        	<configuration>
+        		<lifecycleMappingMetadata>
+        			<pluginExecutions>
+        				<pluginExecution>
+        					<pluginExecutionFilter>
+        						<groupId>
+        							org.apache.maven.plugins
+        						</groupId>
+        						<artifactId>
+        							maven-nar-plugin
+        						</artifactId>
+        						<versionRange>
+        							[2.1-SNAPSHOT,)
+        						</versionRange>
+        						<goals>
+        							<goal>nar-system-generate</goal>
+        							<goal>nar-download</goal>
+        							<goal>nar-testCompile</goal>
+        							<goal>nar-validate</goal>
+        							<goal>nar-javah</goal>
+        							<goal>nar-unpack</goal>
+        							<goal>nar-gnu-process</goal>
+        							<goal>nar-gnu-configure</goal>
+        							<goal>nar-gnu-resources</goal>
+        							<goal>nar-gnu-make</goal>
+        							<goal>nar-resources</goal>
+        							<goal>nar-compile</goal>
+        						</goals>
+        					</pluginExecutionFilter>
+        					<action>
+        						<execute></execute>
+        					</action>
+        				</pluginExecution>
+        			</pluginExecutions>
+        		</lifecycleMappingMetadata>
+        	</configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-nar-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <cpp>
+            <debug>true</debug>
+          </cpp>
+          <libraries>
+            <library>
+              <type>jni</type>
+              <narSystemPackage>se.liu.lysator.dahlberg.libxml2</narSystemPackage>
+              <linkCPP>false</linkCPP>
+            </library>
+          </libraries>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

@@ -41,7 +41,7 @@ public class EchoHandler extends DefaultHandler {
 
 	@Override
 	public void startDocument() throws SAXException {
-		LOG.fine("Start of document");
+		LOG.finest("Start of document");
 		super.startDocument();
 		append("<?xml version='1.0' encoding='UTF-8'?>");
 		append(LINE_END);
@@ -49,7 +49,7 @@ public class EchoHandler extends DefaultHandler {
 
 	@Override
 	public void endDocument() throws SAXException {
-		LOG.fine("End of document");
+		LOG.finest("End of document");
 		append(LINE_END);
 		out.flush();
 		super.endDocument();
@@ -60,7 +60,7 @@ public class EchoHandler extends DefaultHandler {
 			Attributes attributes) throws SAXException {
 		super.startElement(uri, localName, qName, attributes);
 		String name = getName(localName, qName);
-		LOG.fine("Begin element: " + name);
+		LOG.finest("Begin element: " + name);
 		append("<%s", name);
 
         if (attributes != null) {
@@ -78,7 +78,7 @@ public class EchoHandler extends DefaultHandler {
 			throws SAXException {
 		super.endElement(uri, localName, qName);
 		String name = getName(localName, qName);
-		LOG.fine("End element: " + name);
+		LOG.finest("End element: " + name);
 		append("</%s>", name);
 		append(LINE_END);
 	}
@@ -88,7 +88,7 @@ public class EchoHandler extends DefaultHandler {
 		String qName = attributes.getQName(i);
 		String attribute = getName(localName, qName);
 		String value = attributes.getValue(i);
-		LOG.fine("Adding attribute: " + attribute + " with value " + value);
+		LOG.finest("Adding attribute: " + attribute + " with value " + value);
 		append(" %s=\"%s\"", attribute, value);
 	}
 	
